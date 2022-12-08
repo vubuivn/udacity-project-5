@@ -25,3 +25,6 @@ npm install aws-sdk
 
 serverless plugin install -n serverless-reqvalidator-plugin
 serverless plugin install -n serverless-aws-documentation
+
+serverless remove 
+serverless deploy
