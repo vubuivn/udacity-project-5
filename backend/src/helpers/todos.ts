@@ -4,14 +4,14 @@ import { TodoItem } from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
-// import { createLogger } from '../utils/logger'
+import { createLogger } from '../utils/logger'
 import * as uuid from 'uuid'
 // import * as createError from 'http-errors'
 
 // TODO: Implement businessLogic
 // declare const
 // const attachmentUtils   = new AttachmentUtils();
-// const logger            = createLogger('TODO: Implement businessLogic');
+const logger            = createLogger('TODO: Implement businessLogic');
 
 // function GetTodos
 const TodosAccess =  new TodoAccess()
@@ -24,6 +24,7 @@ export async function getTodosForUser(userId: string): Promise<TodoItem[]> {
 export async function createTodo(userId: string, createTodoRequest: CreateTodoRequest): Promise<TodoItem> {
     const itemId = uuid.v4();
   
+    logger.info('Start to create todo - dubug')
     return await TodosAccess.createTodo({
         todoId: itemId,
         userId: userId,

@@ -14,7 +14,7 @@ export class TodoAccess {
     constructor(
         private readonly docClient: DocumentClient = createDynamoDBClient(),
         private readonly todosTable = process.env.TODOS_TABLE,
-        private readonly todosIndex = process.env.TODOS_TODOID_INDEX
+        private readonly todosIndex = process.env.TODOS_INDEX
     ) {
     }
 
@@ -37,16 +37,16 @@ export class TodoAccess {
 
     //Create Todo
     async createTodo(todoItem: TodoItem): Promise<TodoItem> {
-        logger.info('Create A New Todo')
+        logger.info('Create A New Todo - check user ID')
     
         await this.docClient.put({
           TableName: this.todosTable,
           Item: todoItem
         }).promise()
     
-        return todoItem as TodoItem
+        return todoItem
     }
-
+     
     // Update Todo
     async updateTodo(
         todoId: String, 

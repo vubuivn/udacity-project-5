@@ -27,4 +27,5 @@ serverless plugin install -n serverless-reqvalidator-plugin
 serverless plugin install -n serverless-aws-documentation
 
 serverless remove 
-serverless deploy
+start-sleep -Seconds 120
+serverless deploy 
