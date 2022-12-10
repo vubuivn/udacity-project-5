@@ -90,7 +90,7 @@ export class TodoAccess {
       }
 }
 
-function createDynamoDBClient() {
+export function createDynamoDBClient() {
     if (process.env.IS_OFFLINE) {
       return new XAWS.DynamoDB.DocumentClient({
         region: 'localhost',

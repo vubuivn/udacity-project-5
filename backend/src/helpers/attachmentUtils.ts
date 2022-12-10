@@ -1,8 +1,9 @@
 import * as AWS from 'aws-sdk'
 import * as AWSXRay from 'aws-xray-sdk'
-// import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../utils/logger'
-// import * as uuid from 'uuid'
+import * as uuid from 'uuid'
+import { createDynamoDBClient } from '../dataLayer/todosAcess'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 const logger = createLogger('S3 Attachment')
@@ -14,8 +15,8 @@ const s3 = new XAWS.S3({ signatureVersion: 'v4' })
 export class AttachmentUtils {
 
     constructor(
-        // private readonly docClient: DocumentClient = createDynamoDBClient(),
-        // private readonly todosTable = process.env.TODOS_TABLE
+        private readonly docClient: DocumentClient = createDynamoDBClient(),
+        private readonly todosTable = process.env.TODOS_TABLE,
         private readonly s3         = new AWS.S3({ signatureVersion: 'v4' })
     ) {
     }
@@ -33,14 +34,42 @@ export class AttachmentUtils {
         })
         return url as string
     }
+
+    async updateAttachmentUrl(todoId: string, userId: string, url: string): Promise<string> {
+      logger.info('Update attachment url of todo')
+  
+      await this.docClient.update({
+        TableName: this.todosTable,
+        Key: {
+          todoId: todoId,
+          userId: userId
+        },
+        UpdateExpression: "set attachmentUrl = :url",
+        ExpressionAttributeValues: {
+          ":url": url,
+        }
+      }).promise()
+    
+      return url
+    }
+
 }
 
 // Presigned URL
-export function createAttachmentPresignedUrl(todoId: string): string {
+const AttachmentUtil =  new AttachmentUtils()
+export async function createAttachmentPresignedUrl(todoId: string,userId: string): Promise<string> {
+    const imageId = uuid.v4()
+    const url = `https://${S3Bucket}.s3.amazonaws.com/${imageId}`
+    await AttachmentUtil.updateAttachmentUrl(todoId, userId, url)
+
+    return getUploadUrl(imageId)
+  }
+
+  export async function getUploadUrl(imageId: string) {
     return s3.getSignedUrl('putObject', {
       Bucket: S3Bucket,
-      Key: todoId,
-      Expires: parseInt(urlExpiration)
+      Key: imageId,
+      Expires: Number(urlExpiration)
     })
   }
 
