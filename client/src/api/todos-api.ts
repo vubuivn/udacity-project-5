@@ -71,3 +71,20 @@ export async function getUploadUrl(
 export async function uploadFile(uploadUrl: string, file: Buffer): Promise<void> {
   await Axios.put(uploadUrl, file)
 }
+
+
+  // Additional function
+  export async function RemoveImageTodo(
+    idToken: string,
+    todoId: string,
+    s3Key: string
+  ) {
+    await Axios.post(`${apiEndpoint}/todos/removeimage`, {
+      todoId, s3Key
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+      },
+    });
+  }

@@ -53,6 +53,9 @@ custom:
       - name: AttachmentTodoRequest
         contentType: application/json
         schema: ${file(models/update-todo-model.json)}
+      - name: RemoveImage
+        contentType: application/json
+        schema: ${file(models/remove-image-model.json)}
 
   iam:
     role:
@@ -182,7 +185,34 @@ functions:
         Action:
           - s3:PutObject
           - s3:GetObject
+        Resource: arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+          - dynamodb:GetItem
           - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+
+  RemoveImage:
+    handler: src/lambda/http/removeImage.handler
+    events:
+      - http:
+          method: post
+          path: todos/removeimage
+          cors: true
+          authorizer: Auth
+          reqValidatorName: onlyBody
+          documentation:
+            summary: Remove image only
+            description: Remove image onRemoveImagely
+            requestModels:
+              application/json: RemoveImage
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+          - s3:GetObject
+          - s3:DeleteObject
         Resource: arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*
       - Effect: Allow
         Action:

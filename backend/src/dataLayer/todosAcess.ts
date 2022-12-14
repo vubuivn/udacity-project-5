@@ -88,6 +88,19 @@ export class TodoAccess {
     
         return;
       }
+
+      async removeTodoAttachment(userId: string, todoId: string): Promise<void> {
+        await this.docClient.update({
+          TableName: this.todosTable,
+          Key: { todoId, userId },
+          UpdateExpression: "set attachmentUrl = :url",
+          ExpressionAttributeValues: {
+            ":url": '',
+          },
+          ReturnValues: "UPDATED_NEW"
+        }).promise();
+      }
+       
 }
 
 export function createDynamoDBClient() {

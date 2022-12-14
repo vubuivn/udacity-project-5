@@ -14,7 +14,7 @@ import {
   Loader
 } from 'semantic-ui-react'
 
-import { createTodo, deleteTodo, getTodos, patchTodo } from '../api/todos-api'
+import { createTodo, deleteTodo, getTodos, patchTodo, RemoveImageTodo } from '../api/todos-api'
 import Auth from '../auth/Auth'
 import { Todo } from '../types/Todo'
 
@@ -88,6 +88,36 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
       alert('Todo deletion failed')
     }
   }
+
+  // Additional function
+    RemoveImage = async (todo: Todo) => {
+      try {
+        const todoId = todo.todoId;
+        if (todo.attachmentUrl) {
+          const attachmentUrl = todo.attachmentUrl;
+          // const attachmentUrl = "https://vubuiquang-serverless-todo-images-dev.s3.amazonaws.com/9d590193-a17a-4735-ad71-36c1e961b2f0"
+          const attachmentUrlSplit = attachmentUrl.split("/");
+          const s3Key = attachmentUrlSplit[3]
+          await RemoveImageTodo(this.props.auth.getIdToken(), todoId, s3Key);
+          //
+          let updatedTodos: Todo[] = [];
+          this.state.todos.forEach(function (todo) {
+            if (todo.todoId === todoId) {
+              todo.attachmentUrl = "";
+              updatedTodos.push(todo);
+            } else {
+              updatedTodos.push(todo);
+            }
+          });
+          this.setState({
+            todos: updatedTodos,
+          });
+        }
+      } catch (error) {
+        console.log("Failed to remove image..!");
+      }
+    };
+  //
 
   async componentDidMount() {
     try {
@@ -195,6 +225,13 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
               {todo.attachmentUrl && (
                 <Image src={todo.attachmentUrl} size="small" wrapped />
               )}
+              <Grid.Column width={1} floated="left">
+              {
+                    (todo.attachmentUrl === "" || !todo.attachmentUrl)
+                        ? <p></p>
+                        : <Button icon color="red" onClick={() => this.RemoveImage(todo)} > <Icon name="cut" /> </Button>
+              }
+              </Grid.Column>
               <Grid.Column width={16}>
                 <Divider />
               </Grid.Column>

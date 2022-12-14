@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "todo",
+  "type": "object",
+  "properties": {
+    "todoId": {
+      "type": "string"
+    },
+    "s3Key": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "todoId",
+    "s3Key"
+  ],
+  "additionalProperties": false
+}

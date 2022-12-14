@@ -47,7 +47,8 @@ export class AttachmentUtils {
         UpdateExpression: "set attachmentUrl = :url",
         ExpressionAttributeValues: {
           ":url": url,
-        }
+        },
+        ReturnValues: "UPDATED_NEW"
       }).promise()
     
       return url

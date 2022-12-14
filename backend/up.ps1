@@ -3,7 +3,6 @@
 serverless plugin install -n serverless-iam-roles-per-function
 serverless plugin install -n serverless-plugin-tracing
 serverless plugin install -n serverless-webpack
-
 # login to serverless
 serverless login
 serverless deploy
